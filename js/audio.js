@@ -44,6 +44,8 @@
     alarm: function () { for (var i = 0; i < 4; i++) { tone(880, 0.16, "square", 0.07, i * 0.34); tone(660, 0.16, "square", 0.07, i * 0.34 + 0.17); } },
     roll: function (up) { tone(up ? 1500 : 1100, 0.025, "square", 0.025); noise(0.012, 0.12, 0, up ? 5200 : 3800, 9); },
     chunk: function (i) { tone(240 - (i || 0) * 12, 0.14, "triangle", 0.3); noise(0.05, 0.25, 0, 700, 2); },
+    static: function () { noise(0.28, 0.1, 0, 1700, 0.7); noise(0.05, 0.12, 0.26, 3000, 2); },
+    key: function () { noise(0.012, 0.05, 0, 4600, 6); },
     beep: function () { tone(1200, 0.07, "square", 0.05); }
   };
   root.Sfx = S;

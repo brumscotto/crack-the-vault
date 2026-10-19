@@ -123,11 +123,12 @@
         '<div class="fstars">' + A.star(true, 15) + " " + floorStars(F.f) + "/27" + (open ? "" : " &middot; Beat the boss above to open") + "</div></div>" +
         '<div class="tracks"><div class="safes">' + safes + '</div><div class="handrow' + (hOpen ? "" : " shut") + '">' + handHead + '<div class="safes minis">' + minis + "</div></div></div></div>";
     });
-    h += '</div><div class="map-foot"><span>Progress is saved in this browser.</span><span>Teachers: open Settings to unlock every floor.</span></div></div>';
+    h += '</div><div class="map-foot"><span>Progress is saved in this browser. <button class="linkbtn" id="replayIntro">Replay the intro</button></span><span>Teachers: open Settings to unlock every floor.</span></div></div>';
     $("mapScreen").innerHTML = h;
   }
   $("mapScreen").addEventListener("click", function (e) {
     if (e.target.closest("#howBtn")) return openIntro(0);
+    if (e.target.closest("#replayIntro")) return runIntro();
     var go = e.target.closest("[data-go]");
     if (go) { var p = go.dataset.go.split("-"); return startVault(+p[0], +p[1]); }
     var b = e.target.closest(".safe"); if (!b || b.disabled) return;
@@ -1101,6 +1102,10 @@
   $("defs").innerHTML = A.defs();
   S.setOn(save.settings.sound);
   renderMap();
-  if (!save.seen.intro) { save.seen.intro = true; persist(); openIntro(0); }
+  // first visit: the full opening scene; afterwards it's a click away on the map
+  function runIntro() {
+    window.Intro.play(function (choice) { save.seen.intro = true; persist(); if (choice === "job") startVault(1, 0); else renderMap(); });
+  }
+  if (!save.seen.intro) runIntro();
   window.CTV = { start: startVault, state: function () { return G; }, map: renderMap };
 })();

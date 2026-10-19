@@ -176,9 +176,9 @@
   }
 
   // a single dial on its own, already set, for the how-to-play briefing
-  function miniDial(v, text) {
-    return '<svg class="minidial" viewBox="0 0 120 142" aria-hidden="true">' +
-      dial(v, [60, 58, 40]).replace("? ? ?", text).replace('class="dial"', 'class="dial solved"') + "</svg>";
+  function miniDial(v, text, open) {
+    var d = dial(v, [60, 58, 40]).replace("? ? ?", text);
+    return '<svg class="minidial" viewBox="0 0 120 142" aria-hidden="true">' + (open === false ? d : d.replace('class="dial"', 'class="dial solved"')) + "</svg>";
   }
 
   // a pointing hand for drag demos; the fingertip sits at (21, 3) in pixels
@@ -190,5 +190,49 @@
       '<path d="M17 21v3.5M21.5 21v3.5M25.5 21v3" fill="none" stroke-width="1.2"/></g></svg>';
   }
 
-  root.Art = { defs: defs, icon: icon, star: star, logo: logo, door: door, safe: safe, miniDial: miniDial, hand: hand };
+  // ---- the bank at night, for the opening scene ----
+  function bank() {
+    var seed = 7, rnd = function () { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+    var city = "", x = -20;
+    while (x < 1620) {
+      var w = 70 + rnd() * 110, h = 180 + rnd() * 320, top = 820 - h, win = "";
+      if (x > 430 && x < 1170) { x += w + 6; continue; }
+      for (var wy = top + 24; wy < 800; wy += 30) for (var wx = x + 12; wx < x + w - 14; wx += 22) if (rnd() < 0.16) win += '<rect x="' + n(wx) + '" y="' + n(wy) + '" width="9" height="13" fill="#F2CF7E" opacity="' + n(0.35 + rnd() * 0.5) + '"/>';
+      city += '<rect x="' + n(x) + '" y="' + n(top) + '" width="' + n(w) + '" height="' + n(h) + '" fill="#0E1724"/>' + win;
+      x += w + 6;
+    }
+    var cols = "";
+    for (var i = 0; i < 6; i++) {
+      var cx = 560 + i * 96;
+      cols += '<rect x="' + (cx - 22) + '" y="470" width="44" height="300" fill="url(#g-col)"/><rect x="' + (cx - 30) + '" y="460" width="60" height="14" fill="#7C8794"/><rect x="' + (cx - 30) + '" y="766" width="60" height="12" fill="#5D6873"/>';
+      for (var f = -14; f <= 14; f += 7) cols += '<line x1="' + (cx + f) + '" y1="478" x2="' + (cx + f) + '" y2="762" stroke="#000" stroke-opacity=".18"/>';
+    }
+    return '<svg class="bank-scene" viewBox="0 -220 1600 1120" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><defs>' +
+      '<linearGradient id="g-sky" x1="0" y1="0" x2="0" y2="1" gradientUnits="objectBoundingBox"><stop offset="0" stop-color="#05080E"/><stop offset=".7" stop-color="#0E1A2C"/><stop offset="1" stop-color="#16263C"/></linearGradient>' +
+      '<linearGradient id="g-col" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#4F5B67"/><stop offset=".45" stop-color="#9AA6B2"/><stop offset="1" stop-color="#3F4954"/></linearGradient>' +
+      '<radialGradient id="g-moon" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#E8EEF5" stop-opacity=".35"/><stop offset="1" stop-color="#E8EEF5" stop-opacity="0"/></radialGradient>' +
+      '<radialGradient id="g-lamp" cx=".5" cy="0" r="1"><stop offset="0" stop-color="#F6C453" stop-opacity=".45"/><stop offset="1" stop-color="#F6C453" stop-opacity="0"/></radialGradient>' +
+      '<linearGradient id="g-doorlight" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F6C453" stop-opacity=".9"/><stop offset="1" stop-color="#D9A441" stop-opacity=".55"/></linearGradient>' +
+      "</defs>" +
+      '<rect y="-220" width="1600" height="1120" fill="url(#g-sky)"/>' +
+      '<circle cx="1400" cy="40" r="190" fill="url(#g-moon)"/><circle cx="1400" cy="40" r="50" fill="#DCE4EE"/><circle cx="1383" cy="29" r="8" fill="#C4CEDA"/><circle cx="1413" cy="57" r="6" fill="#C4CEDA"/>' +
+      city +
+      // the bank
+      '<rect x="470" y="430" width="660" height="400" fill="#121C29"/>' +
+      '<polygon points="490,430 800,326 1110,430" fill="#56616D" stroke="#2A333D" stroke-width="3"/><polygon points="540,420 800,346 1060,420" fill="#424C57"/>' +
+      '<rect x="480" y="426" width="640" height="40" fill="#6B7682"/>' +
+      '<text class="bank-name" x="800" y="453">BERGMANN SAVINGS &amp; TRUST</text>' +
+      '<rect x="752" y="560" width="96" height="210" fill="url(#g-doorlight)"/><rect x="752" y="560" width="96" height="210" fill="none" stroke="#2A333D" stroke-width="6"/>' +
+      '<polygon points="752,770 848,770 990,900 610,900" fill="#F6C453" opacity=".12"/>' +
+      '<rect x="604" y="520" width="44" height="70" fill="#0A1018"/><rect x="952" y="520" width="44" height="70" fill="#0A1018"/><rect x="956" y="524" width="36" height="62" fill="#F2CF7E" opacity=".35"/>' +
+      cols +
+      '<rect x="450" y="778" width="700" height="16" fill="#6B7682"/><rect x="420" y="794" width="760" height="14" fill="#5D6873"/><rect x="390" y="808" width="820" height="14" fill="#4F5A65"/>' +
+      '<rect x="0" y="822" width="1600" height="78" fill="#070B11"/>' +
+      // a street lamp
+      '<rect x="318" y="560" width="8" height="262" fill="#1E2833"/><rect x="300" y="548" width="44" height="14" rx="4" fill="#1E2833"/>' +
+      '<polygon points="302,562 342,562 420,822 224,822" fill="url(#g-lamp)"/><circle cx="322" cy="566" r="6" fill="#FFE4A0"/>' +
+      "</svg>";
+  }
+
+  root.Art = { defs: defs, icon: icon, star: star, logo: logo, door: door, safe: safe, miniDial: miniDial, hand: hand, bank: bank };
 })(window);
